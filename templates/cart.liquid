@@ -1,0 +1,86 @@
+<div class="cart-page">
+  <div class="container">
+    <h1>{{ 'sections.cart.title' | t }}</h1>
+    
+    <form action="{{ routes.cart_url }}" method="post" novalidate class="cart">
+      <div class="cart__warnings">
+        <h1 class="cart__empty-text">{{ 'sections.cart.empty' | t }}</h1>
+        <a href="{{ routes.all_products_collection_url }}" class="button">
+          {{ 'general.continue_shopping' | t }}
+        </a>
+      </div>
+
+      <div class="cart__contents">
+        <div class="cart__items" id="main-cart-items" data-id="{{ section.id }}">
+          <div class="js-contents">
+            {%- for item in cart.items -%}
+              <div class="cart-item" id="CartItem-{{ item.index | plus: 1 }}">
+                <div class="cart-item__media">
+                  {% if item.image %}
+                    {{ item.image | image_url: width: 300 | image_tag }}
+                  {% endif %}
+                </div>
+                <div class="cart-item__details">
+                  <h3 class="cart-item__name h4">
+                    <a href="{{ item.url }}">{{ item.product.title | escape }}</a>
+                  </h3>
+                  <div class="cart-item__price-wrapper">
+                    <span class="price price--end">
+                      {{ item.original_line_price | money }}
+                    </span>
+                  </div>
+                  <div class="cart-item__quantity">
+                    <label class="visually-hidden" for="Quantity-{{ item.index | plus: 1 }}">
+                      {{ 'products.product.quantity.label' | t }}
+                    </label>
+                    <quantity-input class="quantity">
+                      <button class="quantity__button no-js-hidden" name="minus" type="button">
+                        <span class="visually-hidden">{{ 'products.product.quantity.decrease' | t: product: item.product.title | escape }}</span>
+                        {% render 'icon-minus' %}
+                      </button>
+                      <input class="quantity__input"
+                        type="number"
+                        name="updates[]"
+                        value="{{ item.quantity }}"
+                        min="0"
+                        aria-label="{{ 'products.product.quantity.input_label' | t: product: item.product.title | escape }}"
+                        id="Quantity-{{ item.index | plus: 1 }}"
+                        data-index="{{ item.index | plus: 1 }}"
+                      >
+                      <button class="quantity__button no-js-hidden" name="plus" type="button">
+                        <span class="visually-hidden">{{ 'products.product.quantity.increase' | t: product: item.product.title | escape }}</span>
+                        {% render 'icon-plus' %}
+                      </button>
+                    </quantity-input>
+                  </div>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <p class="visually-hidden" id="cart-live-region-text" aria-live="polite" role="status"></p>
+        <p class="visually-hidden" id="shopping-cart-line-item-status" aria-live="polite" aria-hidden="true" role="status">{{ 'accessibility.loading' | t }}</p>
+      </div>
+
+      <div class="cart__footer">
+        <div class="cart__blocks">
+          <div class="totals">
+            <h3 class="totals__subtotal">{{ 'sections.cart.subtotal' | t }}</h3>
+            <p class="totals__subtotal-value">{{ cart.total_price | money_with_currency }}</p>
+          </div>
+          <div class="cart__ctas" {{ block.shopify_attributes }}>
+            <noscript>
+              <button type="submit" class="cart__update-button button button--secondary" form="cart">
+                {{ 'sections.cart.update' | t }}
+              </button>
+            </noscript>
+            <button type="submit" id="checkout" class="cart__checkout-button button" name="add" form="cart">
+              {{ 'sections.cart.checkout' | t }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,56 @@
+<div class="customer-login">
+  <div class="container">
+    <h1>{{ 'customer.login_page.title' | t }}</h1>
+    
+    {% form 'customer_login', class: 'login-form' %}
+      {{ form.errors | default_errors }}
+      
+      <div class="field">
+        <label for="customer-email">{{ 'customer.login_page.email' | t }}</label>
+        <input
+          type="email"
+          name="customer[email]"
+          id="customer-email"
+          autocomplete="email"
+          {% if form.errors contains 'form' %}
+            aria-invalid="true"
+            aria-describedby="customer-email-error"
+          {% endif %}
+          placeholder="{{ 'customer.login_page.email' | t }}"
+        >
+      </div>
+
+      <div class="field">
+        <label for="customer-password">{{ 'customer.login_page.password' | t }}</label>
+        <input
+          type="password"
+          name="customer[password]"
+          id="customer-password"
+          autocomplete="current-password"
+          {% if form.errors contains 'form' %}
+            aria-invalid="true"
+            aria-describedby="customer-password-error"
+          {% endif %}
+          placeholder="{{ 'customer.login_page.password' | t }}"
+        >
+      </div>
+
+      <div class="login-actions">
+        <button type="submit" class="button button--primary">
+          {{ 'customer.login_page.sign_in' | t }}
+        </button>
+        
+        <a href="{{ routes.account_recover_url }}" class="forgot-password-link">
+          {{ 'customer.login_page.forgot_password' | t }}
+        </a>
+      </div>
+    {% endform %}
+
+    <div class="create-account">
+      <h2>{{ 'customer.login_page.create_account' | t }}</h2>
+      <a href="{{ routes.account_register_url }}" class="button button--secondary">
+        {{ 'customer.register.title' | t }}
+      </a>
+    </div>
+  </div>
+</div>

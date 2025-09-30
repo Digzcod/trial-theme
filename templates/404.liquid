@@ -1,0 +1,66 @@
+<div class="error-page">
+  <div class="container">
+    <div class="error-content">
+      <h1>{{ 'templates.404.title' | t }}</h1>
+      <p class="error-subtext">{{ 'templates.404.subtext' | t }}</p>
+      
+      <div class="error-actions">
+        <a href="{{ routes.root_url }}" class="button button--primary">
+          Return to Home
+        </a>
+        <a href="{{ routes.search_url }}" class="button button--secondary">
+          Search
+        </a>
+      </div>
+      
+      <div class="popular-links">
+        <h3>Popular Pages</h3>
+        <ul>
+          <li><a href="{{ routes.all_products_collection_url }}">All Products</a></li>
+          {% for link in linklists.footer.links limit: 3 %}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .error-page {
+    padding: 4rem 0;
+    text-align: center;
+  }
+  
+  .error-content h1 {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+  
+  .error-subtext {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    color: #666;
+  }
+  
+  .error-actions {
+    margin-bottom: 3rem;
+  }
+  
+  .error-actions .button {
+    margin: 0 1rem;
+  }
+  
+  .popular-links {
+    margin-top: 2rem;
+  }
+  
+  .popular-links ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .popular-links li {
+    margin: 0.5rem 0;
+  }
+</style>

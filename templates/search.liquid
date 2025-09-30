@@ -1,0 +1,105 @@
+{% assign search_performed = false %}
+{% if search.performed %}
+  {% assign search_performed = true %}
+{% endif %}
+
+<div class="search-page">
+  <div class="container">
+    <div class="search-header">
+      <h1>
+        {%- if search_performed -%}
+          {{ 'templates.search.results_with_count_and_term' | t: count: search.results_count, terms: search.terms }}
+        {%- else -%}
+          {{ 'templates.search.title' | t }}
+        {%- endif -%}
+      </h1>
+    </div>
+
+    <div class="search-form-wrapper">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="search-form">
+        <div class="field">
+          <input
+            class="search-input"
+            id="search-input"
+            type="search"
+            name="q"
+            value="{{ search.terms | escape }}"
+            placeholder="Search products, articles, pages..."
+            {%- if settings.predictive_search_enabled -%}
+              role="combobox"
+              aria-expanded="false"
+              aria-owns="predictive-search-results"
+              aria-controls="predictive-search-results"
+              aria-haspopup="listbox"
+              aria-autocomplete="list"
+              autocorrect="off"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+            {%- endif -%}
+          >
+          <button type="submit" class="search-button">
+            Search
+          </button>
+        </div>
+      </form>
+    </div>
+
+    {% if search_performed %}
+      {% if search.results_count == 0 %}
+        <div class="search-no-results">
+          <p>{{ 'templates.search.no_results' | t: terms: search.terms }}</p>
+        </div>
+      {% else %}
+        <div class="search-results">
+          {% paginate search.results by 24 %}
+            <div class="search-results-grid">
+              {% for item in search.results %}
+                <div class="search-result-item">
+                  {% case item.object_type %}
+                    {% when 'product' %}
+                      <div class="search-result-product">
+                        {% if item.featured_media %}
+                          <a href="{{ item.url }}">
+                            {{ item.featured_media | image_url: width: 300 | image_tag: alt: item.featured_media.alt }}
+                          </a>
+                        {% endif %}
+                        <div class="product-info">
+                          <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
+                          <p class="price">{{ item.price | money }}</p>
+                        </div>
+                      </div>
+                    {% when 'article' %}
+                      <div class="search-result-article">
+                        {% if item.image %}
+                          <a href="{{ item.url }}">
+                            {{ item.image | image_url: width: 300 | image_tag: alt: item.image.alt }}
+                          </a>
+                        {% endif %}
+                        <div class="article-info">
+                          <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
+                          <p class="article-summary">{{ item.summary | truncate: 150 }}</p>
+                          <p class="article-date">{{ item.published_at | date: format: 'abbreviated_date' }}</p>
+                        </div>
+                      </div>
+                    {% when 'page' %}
+                      <div class="search-result-page">
+                        <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
+                        <p>{{ item.content | strip_html | truncate: 150 }}</p>
+                      </div>
+                  {% endcase %}
+                </div>
+              {% endfor %}
+            </div>
+
+            {% if paginate.pages > 1 %}
+              <nav class="pagination">
+                {{ paginate | default_pagination }}
+              </nav>
+            {% endif %}
+          {% endpaginate %}
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>

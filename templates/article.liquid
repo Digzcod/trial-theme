@@ -1,0 +1,135 @@
+<article class="article-page">
+  <div class="container">
+    <header class="article-header">
+      <h1 class="article-title">{{ article.title }}</h1>
+      
+      <div class="article-meta">
+        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+          {{ article.published_at | date: format: 'month_day_year' }}
+        </time>
+        {% if article.author %}
+          <span class="article-author">by {{ article.author }}</span>
+        {% endif %}
+        {% if blog.comments_enabled? and article.comments_count > 0 %}
+          <span class="article-comments">
+            <a href="#comments">{{ article.comments_count }} 
+              {% if article.comments_count == 1 %}comment{% else %}comments{% endif %}
+            </a>
+          </span>
+        {% endif %}
+      </div>
+      
+      {% if article.tags.size > 0 %}
+        <div class="article-tags">
+          {% for tag in article.tags %}
+            <span class="tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </header>
+
+    {% if article.image %}
+      <div class="article-featured-image">
+        {{ article.image | image_url: width: 1200 | image_tag: alt: article.image.alt }}
+      </div>
+    {% endif %}
+
+    <div class="article-content rte">
+      {{ article.content }}
+    </div>
+
+    {% if blog.comments_enabled? %}
+      <div id="comments" class="article-comments-section">
+        <h3>
+          {% if article.comments_count > 0 %}
+            {{ article.comments_count }} 
+            {% if article.comments_count == 1 %}Comment{% else %}Comments{% endif %}
+          {% else %}
+            Leave a comment
+          {% endif %}
+        </h3>
+
+        {% paginate article.comments by 5 %}
+          {% if article.comments.size > 0 %}
+            <div class="comments-list">
+              {% for comment in article.comments %}
+                <div class="comment" id="comment-{{ comment.id }}">
+                  <div class="comment-author">{{ comment.author }}</div>
+                  <div class="comment-date">
+                    {{ comment.created_at | date: format: 'month_day_year' }}
+                  </div>
+                  <div class="comment-content">{{ comment.content }}</div>
+                </div>
+              {% endfor %}
+            </div>
+
+            {% if paginate.pages > 1 %}
+              <nav class="pagination">
+                {{ paginate | default_pagination }}
+              </nav>
+            {% endif %}
+          {% endif %}
+        {% endpaginate %}
+
+        {% form 'new_comment', article, class: 'comment-form' %}
+          {{ form.errors | default_errors }}
+          
+          <div class="field">
+            <label for="comment-author">Name</label>
+            <input
+              type="text"
+              id="comment-author"
+              name="comment[author]"
+              value="{{ form.author }}"
+              autocomplete="name"
+              {% if form.errors contains 'author' %}aria-invalid="true"{% endif %}
+              required
+            >
+          </div>
+
+          <div class="field">
+            <label for="comment-email">Email</label>
+            <input
+              type="email"
+              id="comment-email"
+              name="comment[email]"
+              value="{{ form.email }}"
+              autocomplete="email"
+              {% if form.errors contains 'email' %}aria-invalid="true"{% endif %}
+              required
+            >
+          </div>
+
+          <div class="field">
+            <label for="comment-body">Comment</label>
+            <textarea
+              id="comment-body"
+              name="comment[body]"
+              {% if form.errors contains 'body' %}aria-invalid="true"{% endif %}
+              required
+            >{{ form.body }}</textarea>
+          </div>
+
+          {% if blog.moderated? %}
+            <p><small>Comments will be approved before showing up.</small></p>
+          {% endif %}
+
+          <button type="submit" class="button">Post comment</button>
+        {% endform %}
+      </div>
+    {% endif %}
+
+    <div class="article-navigation">
+      {% if blog.previous_article %}
+        <a href="{{ blog.previous_article.url }}" class="prev-article">
+          ← {{ blog.previous_article.title }}
+        </a>
+      {% endif %}
+      {% if blog.next_article %}
+        <a href="{{ blog.next_article.url }}" class="next-article">
+          {{ blog.next_article.title }} →
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</article>

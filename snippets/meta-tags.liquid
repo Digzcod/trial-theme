@@ -1,0 +1,88 @@
+{% comment %}
+  Renders meta tags and structured data.
+
+  Accepts:
+  - page_description: {String} An optional page description to override the default
+  
+  Usage:
+  {% render 'meta-tags' %}
+{% endcomment %}
+
+{%- liquid
+  assign og_title = page_title | default: shop.name
+  assign og_url = canonical_url | default: shop.url
+  assign og_type = 'website'
+  
+  case request.page_type
+    when 'product'
+      assign og_type = 'product'
+    when 'article'
+      assign og_type = 'article'
+  endcase
+
+  if page_description
+    assign og_description = page_description | strip_html | truncatewords: 25
+  else
+    assign og_description = shop.description | default: shop.name
+  endif
+-%}
+
+<!-- Meta Tags -->
+<meta property="og:site_name" content="{{ shop.name }}">
+<meta property="og:url" content="{{ og_url }}">
+<meta property="og:title" content="{{ og_title }}">
+<meta property="og:type" content="{{ og_type }}">
+<meta property="og:description" content="{{ og_description }}">
+
+{%- if request.page_type == 'product' -%}
+  <meta property="og:price:amount" content="{{ product.price | money_without_currency | strip }}">
+  <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
+  <meta property="product:availability" content="{% if product.available %}instock{% else %}oos{% endif %}">
+  <meta property="product:price:amount" content="{{ product.price | money_without_currency | strip }}">
+  <meta property="product:price:currency" content="{{ cart.currency.iso_code }}">
+{%- endif -%}
+
+{%- if request.page_type == 'product' and product.featured_media -%}
+  <meta property="og:image" content="http:{{ product.featured_media | image_url: width: 1200 }}">
+  <meta property="og:image:secure_url" content="https:{{ product.featured_media | image_url: width: 1200 }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="1200">
+  <meta property="og:image:alt" content="{{ product.featured_media.alt | escape }}">
+{%- elsif settings.share_image -%}
+  <meta property="og:image" content="http:{{ settings.share_image | image_url: width: 1200 }}">
+  <meta property="og:image:secure_url" content="https:{{ settings.share_image | image_url: width: 1200 }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+{%- endif -%}
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ og_title }}">
+<meta name="twitter:description" content="{{ og_description }}">
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "{% if request.page_type == 'product' %}Product{% else %}WebSite{% endif %}",
+  {% if request.page_type == 'product' %}
+    "name": {{ product.title | json }},
+    "description": {{ product.description | strip_html | json }},
+    "brand": {
+      "@type": "Brand",
+      "name": {{ product.vendor | json }}
+    },
+    "sku": {{ product.selected_or_first_available_variant.sku | json }},
+    "offers": {
+      "@type": "Offer",
+      "url": {{ shop.url | append: product.url | json }},
+      "priceCurrency": {{ cart.currency.iso_code | json }},
+      "price": "{{ product.selected_or_first_available_variant.price | money_without_currency | strip }}",
+      "availability": "http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}"
+    }
+  {% else %}
+    "name": {{ shop.name | json }},
+    "url": {{ shop.url | json }}
+  {% endif %}
+}
+</script>

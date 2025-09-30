@@ -1,0 +1,27 @@
+<div class="page-width">
+  <div class="title-wrapper-with-link">
+    <h2 id="SectionHeading-{{ section.id }}" class="title inline-richtext medium">
+      {{ section.settings.heading }}
+    </h2>
+  </div>
+
+  <div class="page-content rte">
+    {{ page.content }}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Page",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "Page",
+      "label": "Heading"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,60 @@
+{% paginate blog.articles by 6 %}
+  <div class="blog-page">
+    <div class="container">
+      <h1 class="blog-title">{{ blog.title }}</h1>
+      
+      {% if blog.description != blank %}
+        <div class="blog-description">
+          {{ blog.description }}
+        </div>
+      {% endif %}
+
+      {% if blog.articles.size > 0 %}
+        <div class="articles-grid">
+          {% for article in blog.articles %}
+            <article class="article-item">
+              {% if article.image %}
+                <div class="article-image">
+                  <a href="{{ article.url }}">
+                    {{ article.image | image_url: width: 400 | image_tag: alt: article.image.alt }}
+                  </a>
+                </div>
+              {% endif %}
+              
+              <div class="article-content">
+                <h2 class="article-title">
+                  <a href="{{ article.url }}">{{ article.title }}</a>
+                </h2>
+                
+                <div class="article-meta">
+                  <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                    {{ article.published_at | date: format: 'abbreviated_date' }}
+                  </time>
+                  {% if article.author %}
+                    <span class="article-author">by {{ article.author }}</span>
+                  {% endif %}
+                </div>
+                
+                {% if article.excerpt != blank %}
+                  <div class="article-excerpt">
+                    {{ article.excerpt }}
+                  </div>
+                {% endif %}
+                
+                <a href="{{ article.url }}" class="read-more">Read more</a>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <nav class="pagination">
+            {{ paginate | default_pagination }}
+          </nav>
+        {% endif %}
+      {% else %}
+        <p>No articles found.</p>
+      {% endif %}
+    </div>
+  </div>
+{% endpaginate %}

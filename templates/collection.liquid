@@ -1,0 +1,37 @@
+{% paginate collection.products by 24 %}
+  <div class="collection-page">
+    <div class="container">
+      <h1 class="collection-title">{{ collection.title }}</h1>
+      
+      {% if collection.description != blank %}
+        <div class="collection-description">
+          {{ collection.description }}
+        </div>
+      {% endif %}
+
+      {% if collection.products.size > 0 %}
+        <div class="product-grid">
+          {% for product in collection.products %}
+            <div class="product-item">
+              <a href="{{ product.url }}">
+                {% if product.featured_media %}
+                  {{ product.featured_media | image_url: width: 300 | image_tag: alt: product.featured_media.alt }}
+                {% endif %}
+                <h3>{{ product.title }}</h3>
+                <p class="price">{{ product.price | money }}</p>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <nav class="pagination">
+            {{ paginate | default_pagination }}
+          </nav>
+        {% endif %}
+      {% else %}
+        <p>{{ 'collections.general.no_matches' | t }}</p>
+      {% endif %}
+    </div>
+  </div>
+{% endpaginate %}
