@@ -1,0 +1,51 @@
+{% style %}
+  {% # Loads all font variantions with display: swap %}{{ settings.type_primary_font | font_face: font_display: 'swap' }}{{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}{{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}{{ settings.type_primary_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}:root {
+    --font-primary--family: {{ settings.type_primary_font.family }}, 
+    {{ settings.type_primary_font.fallback_families }};
+    --font-primary--style: {{ settings.type_primary_font.style }};
+    --font-primary--weight: {{ settings.type_primary_font.weight }};
+    --page-width: {{ settings.max_page_width }};
+    --page-margin: {{ settings.min_page_margin }}px;
+    --page-padding: 1.5rem;
+    --color-background: {{ settings.background_color }};
+    --color-foreground: {{ settings.foreground_color }};
+    --color-background-2: {{ settings.background_color_2 | default: settings.background_color }};
+    --color-accent-1: {{ settings.accent_color_1 | default: '59, 130, 246' }};
+    --color-accent-1-text: {{ settings.accent_color_1_text | default: '255, 255, 255' }};
+    --color-accent-2: {{ settings.accent_color_2 | default: settings.accent_color_1 | default: '79, 70, 229' }};
+    --color-accent-2-text: {{ settings.accent_color_2_text | default: '255, 255, 255' }};
+    --color-border: {{ settings.border_color | default: '229, 231, 235' }};
+    --color-card-background: {{ settings.card_background | default: settings.background_color }};
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-h2: 2.5rem;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.625;
+    --letter-spacing-tight: -0.025em;
+    --border-radius-card: 0.75rem;
+    --border-radius-button: 0.5rem;
+    --border-radius-pill: 9999px;
+    --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1)
+    , 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-card-hover: 0 10px 25px -3px rgba(0, 0, 0, 0.1)
+    , 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --transition-colors: color 0.2s ease
+    , background-color 0.2s ease;
+    --transition-card: transform 0.2s ease
+    , box-shadow 0.2s ease;
+    --transition-image: transform 0.3s ease;
+    --transition-transform: transform 0.2s ease;
+    --card-hover-transform: translateY(-2px);
+    --image-hover-transform: scale(1.05);
+    --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+  }
+{% endstyle %}

@@ -1,0 +1,105 @@
+{% comment %} 
+  Enhanced Add to Cart Button
+  Usage: {% render 'add-to-cart-button', product: product, variant: variant %} 
+{% endcomment %}
+
+{%- liquid
+  assign current_variant = variant | default: product.selected_or_first_available_variant
+  assign product_form_id = 'product-form-' | append: section.id | append: product.id
+-%}
+
+<form
+  action="{{ routes.cart_add_url }}"
+  method="post"
+  enctype="multipart/form-data"
+  id="{{ product_form_id }}"
+  class="product-form">
+  <input
+    type="hidden"
+    name="id"
+    value="{{ current_variant.id }}">
+
+  <button
+    type="submit"
+    name="add"
+    class="btn btn--primary add-to-cart-btn"
+    {% unless current_variant.available %}
+    disabled{% endunless %}
+    data-add-to-cart>
+    <span class="add-to-cart-text">
+      {% if current_variant.available %}
+        Add to cart
+      {% else %}
+        Sold out
+      {% endif %}
+    </span>
+    <span class="add-to-cart-loading hidden">Adding...</span>
+  </button>
+</form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('{{ product_form_id }}');
+    const button = form.querySelector('[data-add-to-cart]');
+    const buttonText = button.querySelector('.add-to-cart-text');
+    const loadingText = button.querySelector('.add-to-cart-loading');
+  
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Show loading state
+      button.disabled = true;
+      buttonText.classList.add('hidden');
+      loadingText.classList.remove('hidden');
+  
+      // Get form data
+      const formData = new FormData(form);
+      const productData = {
+        id: formData.get('id'),
+        quantity: parseInt(formData.get('quantity')) || 1
+      };
+  
+      // Use CartUtils to add to cart
+      if (window.CartUtils) {
+        window.CartUtils.addToCart(productData)
+          .then(item => {
+            // Success feedback
+            buttonText.textContent = 'Added!';
+            setTimeout(() => {
+              buttonText.textContent = 'Add to cart';
+            }, 2000);
+          })
+          .catch(error => {
+            console.error('Add to cart failed:', error);
+            alert('Failed to add item to cart. Please try again.');
+          })
+          .finally(() => {
+            // Reset button state
+            button.disabled = false;
+            buttonText.classList.remove('hidden');
+            loadingText.classList.add('hidden');
+          });
+      } else {
+        // Fallback to regular form submission
+        form.submit();
+      }
+    });
+  });
+</script>
+
+<style>
+  .add-to-cart-btn {
+    position: relative;
+    min-width: 120px;
+    transition: all 0.3s ease;
+  }
+
+  .add-to-cart-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>

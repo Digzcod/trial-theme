@@ -1,0 +1,116 @@
+{% comment %} 
+  Product Rating Snippet
+  Displays star rating for products
+  Parameters: 
+  - rating: Rating value (e.g., 4.5) 
+  - show_text: Show rating text (optional) 
+{% endcomment %}
+
+{%- liquid
+  assign rating_value = rating | default: 0
+  assign max_rating = 5
+  assign full_stars = rating_value | floor
+  assign has_half_star = false
+  assign remainder = rating_value | modulo: 1
+
+  if remainder >= 0.5
+    assign has_half_star = true
+  endif
+
+  assign empty_stars = max_rating | minus: full_stars
+  if has_half_star
+    assign empty_stars = empty_stars | minus: 1
+  endif
+-%}
+
+<div class="product-rating" aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: rating_value, rating_max: max_rating }}">
+  <div class="product-rating__stars">
+    {% comment %} Full Stars {% endcomment %}
+    {% for i in (1..full_stars) %}
+      <svg
+        class="product-rating__star product-rating__star--full"
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="currentColor"
+        aria-hidden="true">
+        <path d="M8 1l2.2 4.4 4.8.7-3.5 3.4.8 4.8L8 12.1l-4.3 2.2.8-4.8L1 6.1l4.8-.7L8 1z" />
+      </svg>
+    {% endfor %}
+
+    {% comment %} Half Star {% endcomment %}
+    {% if has_half_star %}
+      <svg
+        class="product-rating__star product-rating__star--half"
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="currentColor"
+        aria-hidden="true">
+        <defs>
+          <linearGradient id="half-star-{{ rating_value | handle }}">
+            <stop offset="50%" stop-color="currentColor" />
+            <stop offset="50%" stop-color="transparent" />
+          </linearGradient>
+        </defs>
+        <path d="M8 1l2.2 4.4 4.8.7-3.5 3.4.8 4.8L8 12.1l-4.3 2.2.8-4.8L1 6.1l4.8-.7L8 1z" fill="url(#half-star-{{ rating_value | handle }})" />
+      </svg>
+    {% endif %}
+
+    {% comment %} Empty Stars {% endcomment %}
+    {% for i in (1..empty_stars) %}
+      <svg
+        class="product-rating__star product-rating__star--empty"
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1"
+        aria-hidden="true">
+        <path d="M8 1l2.2 4.4 4.8.7-3.5 3.4.8 4.8L8 12.1l-4.3 2.2.8-4.8L1 6.1l4.8-.7L8 1z" />
+      </svg>
+    {% endfor %}
+  </div>
+
+  {% if show_text %}
+    <span class="product-rating__text">{{ rating_value }} {{ 'accessibility.star_reviews_info' | t: rating_value: rating_value, rating_max: max_rating }}</span>
+  {% endif %}
+</div>
+
+<style>
+  .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .product-rating__stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .product-rating__star {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .product-rating__star--full {
+    color: #ffc107;
+  }
+
+  .product-rating__star--half {
+    color: #ffc107;
+  }
+
+  .product-rating__star--empty {
+    color: #e0e0e0;
+  }
+
+  .product-rating__text {
+    font-size: 0.875rem;
+    color: #666;
+  }
+</style>

@@ -1,0 +1,73 @@
+/* ===== MOBILE DROPDOWN ENHANCEMENTS ===== */
+
+/* Touch-friendly improvements for mobile devices */
+@media screen and (max-width: 767px) {
+  .mobile-dropdown__trigger {
+    min-height: 48px; /* Ensure adequate touch target size */
+    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+  }
+
+  .mobile-dropdown__link {
+    min-height: 44px; /* Touch-friendly link height */
+    display: flex;
+    align-items: center;
+    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+  }
+
+  /* Enhanced icon rotation - ensure it stays rotated when open */
+  .mobile-dropdown__trigger[aria-expanded="true"] .mobile-dropdown__icon svg,
+  .mobile-dropdown.dropdown-open .mobile-dropdown__trigger .mobile-dropdown__icon svg {
+    transform: rotate(180deg) !important;
+  }
+  
+  .mobile-dropdown__trigger[aria-expanded="true"] .mobile-dropdown__icon,
+  .mobile-dropdown.dropdown-open .mobile-dropdown__trigger .mobile-dropdown__icon {
+    transform: rotate(-360deg) !important;
+  }
+
+  /* Enhanced visual feedback for mobile interactions */
+  .mobile-dropdown__trigger:active {
+    background: #f8fafc;
+    transform: scale(0.98);
+  }
+
+  .mobile-dropdown__link:active {
+    background: #f8fafc;
+    transform: scale(0.98);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .mobile-dropdown__trigger {
+    border: 1px solid currentColor;
+  }
+
+  .mobile-dropdown__trigger.active {
+    background: HighlightText;
+    color: Highlight;
+  }
+
+  .mobile-dropdown__link.active {
+    background: HighlightText;
+    color: Highlight;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-dropdown__menu {
+    transition: none;
+  }
+
+  .mobile-dropdown__icon {
+    transition: none;
+  }
+
+  .mobile-dropdown__trigger,
+  .mobile-dropdown__link {
+    transition: none;
+  }
+}
+
+/* Simplified styling - no dark backgrounds */

@@ -1,0 +1,59 @@
+{% comment %} 
+  Cart Count Helper Script
+  This snippet provides global cart functionality to update cart count across the theme 
+{% endcomment %}
+
+<script>
+  // Global cart utilities
+  window.CartUtils = {
+    // Update cart count in header
+    updateCount: function(count) {
+      if (window.updateCartCount) {
+        window.updateCartCount(count);
+      }
+    },
+  
+    // Fetch and update cart count
+    refreshCount: function() {
+      fetch('/cart.json')
+        .then(response => response.json())
+        .then(cart => {
+          this.updateCount(cart.item_count);
+        })
+        .catch(error => {
+          console.error('Failed to fetch cart:', error);
+        });
+    },
+  
+    // Add to cart with count update
+    addToCart: function(formData) {
+      return fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(item => {
+        // Trigger cart added event
+        document.dispatchEvent(new CustomEvent('cart:added', {
+          detail: { item: item }
+        }));
+        
+        // Update cart count
+        this.refreshCount();
+        
+        return item;
+      });
+    }
+  };
+  
+  // Auto-refresh cart count on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.CartUtils) {
+      window.CartUtils.refreshCount();
+    }
+  });
+</script>

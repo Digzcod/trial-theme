@@ -1,5 +1,12 @@
 {
   "general": {
+
+    "navigation": {
+      "expand_menu": "Expand menu",
+    },
+    "mobile_menu": {
+      "toggle": "Toggle mobile menu"
+    },
     "accessibility": {
       "skip_to_text": "Skip to content",
       "close": "Close",
@@ -19,7 +26,24 @@
     "continue_shopping": "Continue shopping",
     "share": {
       "success_message": "Link copied to clipboard"
-    }
+    },
+    "cart": {
+      "title": "Cart"
+    },
+    "customer": {
+      "login": {
+        "email": "Email",
+        "submit": "Sign in",
+        "title": "Login"
+      },
+      "register": {
+        "title": "Create Account",
+        "errors": {
+          "email_taken": "An account already exists with this email address"
+        }
+      }
+    }, 
+    "close": "Close"
   },
   "sections": {
     "cart": {
@@ -71,8 +95,14 @@
     "update_language": "Update language",
     "update_country": "Update country/region"
   },
-  "customer": {
+  "customers": {
     "account": {
+      "title": "Account",
+      "details": "Account details",
+      "view_addresses": "View addresses",
+      "return": "Return to Account details"
+    },
+    "login": {
       "title": "Account",
       "details": "Account details",
       "view_addresses": "View addresses",

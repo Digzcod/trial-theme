@@ -1,0 +1,197 @@
+{% comment %} 
+      Enterprise Price Display Snippet
+       
+      Usage:
+      {% render 'price', variant: product.selected_or_first_available_variant, show_badges: true %}
+       
+      Parameters: 
+      - variant: required - product variant object 
+      - product: optional - product object for unit pricing 
+      - show_badges: optional - show sale/sold out badges 
+      - show_tax_note: optional - show tax inclusion note 
+      - price_class: optional - additional CSS classes 
+{% endcomment %}
+
+{% liquid
+  assign variant = variant | default: product.selected_or_first_available_variant
+  assign show_badges = show_badges | default: true
+  assign show_tax_note = show_tax_note | default: false
+  assign price_class = price_class | default: ''
+
+  assign on_sale = false
+  assign sold_out = false
+
+  if variant
+    if variant.compare_at_price > variant.price
+      assign on_sale = true
+    endif
+    unless variant.available
+      assign sold_out = true
+    endunless
+  endif
+%}
+
+<div class="price {{ price_class }}{% if on_sale %} price--on-sale{% endif %}{% if sold_out %} price--sold-out{% endif %}" data-price-wrapper>
+
+  {% if variant %}
+
+    {% comment %} Main Price {% endcomment %}
+    <div class="price__container">
+      {% if on_sale %}
+        <span class="price__sale">
+          <span class="price__current" data-price>
+            {{ variant.price | money }}
+          </span>
+          <span class="price__compare" data-compare-price>
+            {{ variant.compare_at_price | money }}
+          </span>
+        </span>
+      {% else %}
+        <span class="price__regular" data-price>
+          {{ variant.price | money }}
+        </span>
+      {% endif %}
+
+      {% comment %} Unit Price {% endcomment %}
+      {% if variant.unit_price_measurement %}
+        <div class="price__unit">
+          <span class="price__unit-price">
+            {{ variant.unit_price | money }}
+          </span>
+          <span class="price__unit-measure">
+            /
+            {%- if variant.unit_price_measurement.reference_value != 1 -%}
+              {{ variant.unit_price_measurement.reference_value }}
+            {%- endif -%}
+            {{ variant.unit_price_measurement.reference_unit }}
+          </span>
+        </div>
+      {% endif %}
+    </div>
+
+    {% comment %} Badges {% endcomment %}
+    {% if show_badges %}
+      <div class="price__badges">
+        {% if sold_out %}
+          <span class="badge badge--sold-out">
+            {{ 'products.product.sold_out' | t }}
+          </span>
+        {% elsif on_sale %}
+          {% assign discount_percent = variant.compare_at_price | minus: variant.price | times: 100 | divided_by: variant.compare_at_price | round %}
+          <span class="badge badge--sale">
+            Save {{ discount_percent }}%
+          </span>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% comment %} Tax Note {% endcomment %}
+    {% if show_tax_note %}
+      <div class="price__tax-note">
+        Tax included
+      </div>
+    {% endif %}
+
+  {% else %}
+    {% comment %} No variant available {% endcomment %}
+    <div class="price__unavailable">
+      Unavailable
+    </div>
+  {% endif %}
+</div>
+
+{% comment %} Scoped CSS {% endcomment %}
+{% stylesheet %}
+  .price {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-weight: 500;
+  }
+
+  .price__container {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .price__current,
+  .price__regular {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-foreground);
+  }
+
+  .price__compare {
+    font-size: 1.125rem;
+    color: var(--color-foreground-75);
+    text-decoration: line-through;
+  }
+
+  .price__unit {
+    font-size: 0.875rem;
+    color: var(--color-foreground-75);
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+  }
+
+  .price__badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+
+  .badge--sale {
+    background-color: var(--color-accent);
+    color: var(--color-accent-contrast);
+  }
+
+  .badge--sold-out {
+    background-color: var(--color-error);
+    color: var(--color-error-contrast);
+  }
+
+  .price__tax-note {
+    font-size: 0.875rem;
+    color: var(--color-foreground-75);
+  }
+
+  .price__unavailable {
+    font-size: 1.125rem;
+    color: var(--color-foreground-50);
+    font-style: italic;
+  }
+
+  .price--on-sale .price__current {
+    color: var(--color-accent);
+  }
+
+  .price--sold-out .price__current,
+  .price--sold-out .price__regular {
+    color: var(--color-foreground-50);
+  }
+
+  @media screen and (max-width: 749px) {
+    .price__current,
+    .price__regular {
+      font-size: 1.25rem;
+    }
+
+    .price__compare {
+      font-size: 1rem;
+    }
+  }
+{% endstylesheet %}
